@@ -58,8 +58,8 @@ class FrontEndTools extends WireData implements Module {
     $output_file_name = "{$output_file}.css";
     $css_file_path = $output_dir . $output_file_name;
     $root_url = "http://" . $this->config->httpHost . $this->config->urls->root;
-    $cache_folder = $this->config->paths->assets . "cache/less/";
-    $cache_url = $this->config->urls->assets . "cache/less/";
+    $cache_folder = $this->config->paths->assets . "less-cache/";
+    $cache_url = $this->config->urls->assets . "less-cache/";
 
     $less_array = [];
     foreach($less_files as $file) $less_array[$file] = $root_url;
