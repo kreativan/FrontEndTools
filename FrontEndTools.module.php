@@ -1,9 +1,10 @@
 <?php
+
 /**
  *  FrontEndTools
- *  @author Ivan Milincic <kreativan.dev@gmail.com>
+ *  @author Ivan Milincic <hello@kreativan.dev>
  *  @link https://www.kraetivan.dev
-*/
+ */
 
 class FrontEndTools extends WireData implements Module {
 
@@ -30,12 +31,13 @@ class FrontEndTools extends WireData implements Module {
    * @param array $less_files -  array of less variables ["my_variable" => "100px"]
    * @param string $output_file - output file name
    */
-  public function less($less_files, $variables = [], $output_file = "main") {
-    $css_file_path = $this->config->paths->assets."less/{$output_file}.css";
-    if($this->compiler == "1" || !file_exists($css_file_path)) {
-      return $this->compileLess($less_files, $variables, $output_file);
+  public function less($less_files, $variables = [], $options = []) {
+    $output_file = !empty($options["output_file"]) ? $options["output_file"] : "main";
+    $css_file_path = $this->config->paths->assets . "less/{$output_file}.css";
+    if ($this->compiler == "1" || !file_exists($css_file_path)) {
+      return $this->compileLess($less_files, $variables, $options);
     } else {
-      return $this->config->urls->assets."less/{$output_file}.css";
+      return $this->config->urls->assets . "less/{$output_file}.css";
     }
   }
 
@@ -44,7 +46,10 @@ class FrontEndTools extends WireData implements Module {
    *  @param array $less_files - array of less file paths
    *  @param array $variables - array of less variables ["my_variable" => "100px"]
    */
-  public function compileLess($less_files, $variables = [], $output_file = "less") {
+  public function compileLess($less_files, $variables = [], $options = []) {
+
+    $output_file = !empty($options["output_file"]) ? $options["output_file"] : "main";
+    $cache_folder_name = !empty($options["cache_folder"]) ? $options["cache_folder"] : "less-cache";
 
     // load less.php if it is not already loaded
     // a simple require_once does not work properly
@@ -53,20 +58,20 @@ class FrontEndTools extends WireData implements Module {
 
     // create less folder
     $output_dir = $this->config->paths->assets . "less/";
-    if(!is_dir($output_dir)) $this->files->mkdir($output_dir);
-    
+    if (!is_dir($output_dir)) $this->files->mkdir($output_dir);
+
     $output_file_name = "{$output_file}.css";
     $css_file_path = $output_dir . $output_file_name;
     $root_url = "http://" . $this->config->httpHost . $this->config->urls->root;
-    $cache_folder = $this->config->paths->assets . "less-cache/";
-    $cache_url = $this->config->urls->assets . "less-cache/";
+    $cache_folder = $this->config->paths->assets . "$cache_folder_name/";
+    $cache_url = $this->config->urls->assets . "$cache_folder_name/";
 
     $less_array = [];
-    foreach($less_files as $file) $less_array[$file] = $root_url;
+    foreach ($less_files as $file) $less_array[$file] = $root_url;
 
     $options = [
       'cache_dir' => $cache_folder,
-      'compress'=> true,
+      'compress' => true,
     ];
 
     $css_file_name = Less_Cache::Get($less_array, $options, $variables);
@@ -74,7 +79,6 @@ class FrontEndTools extends WireData implements Module {
     file_put_contents($css_file_path, $compiled);
 
     return $cache_url . $css_file_name;
-
   }
 
   /* =========================================================== 
@@ -86,23 +90,22 @@ class FrontEndTools extends WireData implements Module {
    *  Put compiled string in a file
    *  return url to the compiled css file
    */
-  public function scss($scss_dir = "", $source_file = "style.scss", $output_file = "main-scss") { 
+  public function scss($scss_dir = "", $source_file = "style.scss", $output_file = "main-scss") {
 
-    if($scss_dir == "") $scss_dir = $this->config->paths->templates . "scss/";
+    if ($scss_dir == "") $scss_dir = $this->config->paths->templates . "scss/";
     $main_scss_path = $this->config->paths->assets . "scss/{$output_file}.css";
     $main_scss_url = $this->config->urls->assets . "scss/{$output_file}.css";
 
     // if compiler is off, just return css file url
-    if($this->compiler != "1") return $main_scss_url."?{$this->last_compile_time}";
+    if ($this->compiler != "1") return $main_scss_url . "?{$this->last_compile_time}";
 
-    if($this->needsCompile($scss_dir) || !file_exists($main_scss_path)) {
+    if ($this->needsCompile($scss_dir) || !file_exists($main_scss_path)) {
       $compiled_scss = $this->compileSCSS($scss_dir, $source_file);
       $this->files->filePutContents($main_scss_path, $compiled_scss);
       $this->saveModule($this, ["last_compile_time" => time()]);
     }
 
-    return $main_scss_url."?{$this->last_compile_time}";
-
+    return $main_scss_url . "?{$this->last_compile_time}";
   }
 
   /**
@@ -112,7 +115,7 @@ class FrontEndTools extends WireData implements Module {
    *  @return string
    */
   public function compileSCSS($scss_dir = "", $scss_file = "style.scss") {
-    if($scss_dir == "") $scss_dir = $this->config->paths->templates . "scss/";
+    if ($scss_dir == "") $scss_dir = $this->config->paths->templates . "scss/";
     $scss_file_path = "{$scss_dir}{$scss_file}";
     if (!file_exists($scss_file_path)) return false;
     require_once("scss.php/scss.inc.php");
@@ -130,19 +133,19 @@ class FrontEndTools extends WireData implements Module {
    * @return bool
    */
   public function needsCompile($folder) {
-    $root_files = glob($folder. "*");
-    foreach($root_files as $file) {
-      if(is_dir($file)) {
-        $files = glob($file."/*");
-        foreach($files as $f) {
+    $root_files = glob($folder . "*");
+    foreach ($root_files as $file) {
+      if (is_dir($file)) {
+        $files = glob($file . "/*");
+        foreach ($files as $f) {
           $last_time = $this->last_compile_time;
           $this_time = filemtime($f);
-          if($this_time > $last_time) return true;
+          if ($this_time > $last_time) return true;
         }
       } elseif ($file != "." && $file != "..") {
         $last_time = $this->last_compile_time;
         $this_time = filemtime($file);
-        if($this_time > $last_time) return true;
+        if ($this_time > $last_time) return true;
       }
     }
     return false;
@@ -165,6 +168,4 @@ class FrontEndTools extends WireData implements Module {
     $minifier->add($css_string);
     return $minifier->minify();
   }
-
-
 }
