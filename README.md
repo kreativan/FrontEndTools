@@ -47,3 +47,18 @@ $scss = $FrontEndTools->scss($scss_dir, $source_file_name, $output_file_name);
 // echo <link> tag in <head> section
 echo "<link rel='stylesheet' type='text/css' href='$scss'>";
 ```
+
+## Minify
+```php
+// Get the module instance
+$FrontEndTools = $modules->get("FrontEndTools");
+
+// css string
+$css_string = "body { color: red; }";
+
+// Minify
+$minified_css = $FrontEndTools->minify($css_string);
+
+// TODO file_put_contents();
+
+```
