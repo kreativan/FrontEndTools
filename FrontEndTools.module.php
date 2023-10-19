@@ -53,6 +53,9 @@ class FrontEndTools extends WireData implements Module {
     echo "<link rel='preload' href='{$css_file_url}' as='script'>";
   }
 
+  /**
+   * UIkit scripts tags
+   */
   public function uikit_scripts() {
     foreach ($this->uikit_js_files as $file) {
       echo "<script defer type='text/javascript' src='{$file}'></script>";
