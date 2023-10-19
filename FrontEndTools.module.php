@@ -21,9 +21,123 @@ class FrontEndTools extends WireData implements Module {
     );
   }
 
-  /* =========================================================== 
-    Compile Less
-  =========================================================== */
+  public function path() {
+    return __DIR__ . "/";
+  }
+
+  public function url() {
+    return $this->wire('config')->urls->siteModules . $this->className() . '/';
+  }
+
+  // --------------------------------------------------------- 
+  // UIkit 
+  // --------------------------------------------------------- 
+
+  /**
+   * UIkit stylesheet script tag
+   * @see $this->uikit_compile();
+   */
+  public function uikit_stylesheet($custom_files = [], $custom_variables = [], $custom_options = []) {
+    $src = $this->uikit_compile($custom_files, $custom_variables, $custom_options);
+    echo "<link rel='stylesheet' type='text/css' href='{$src}'>";
+  }
+
+  /**
+   * UIkit preload link tag
+   */
+  public function uikit_preload() {
+    $css_file_path = $this->config->paths->assets . "less/main-uikit.css";
+    $css_file_url = $this->config->urls->assets . "less/main-uikit.css";
+    if ($this->compiler == "1") return;
+    if (!file_exists($css_file_path)) return;
+    echo "<link rel='preload' href='{$css_file_url}' as='script'>";
+  }
+
+  public function uikit_scripts() {
+    foreach ($this->uikit_js_files as $file) {
+      echo "<script defer type='text/javascript' src='{$file}'></script>";
+    }
+  }
+
+  /**
+   * Compile and return css file url 
+   * @param array $custom_files - array of less file paths
+   * @param array $custom_variables - array of less variables ["my_variable" => "100px"]
+   * @param array $custom_options - array of less variables ["my_variable" => "100px"]
+   * @return string
+   */
+  public function uikit_compile($custom_files, $custom_variables = [], $custom_options = []) {
+    $less_files = $this->uikit_less_files();
+    $less_files = array_merge($less_files, $custom_files);
+    $options = ['output_file' => "main-uikit"];
+    $options = array_merge($options, $custom_options);
+    $src = $this->less($less_files, $custom_variables, $options);
+    return $src;
+  }
+
+  /**
+   * UIkit Less Files
+   * Get array of less file paths
+   * If theme there is only 1 all-in-one file,
+   * If custom, only selected files.
+   * @return array
+   */
+  public function uikit_less_files() {
+    $array = [];
+
+    // If theme include all-in-one file uikit framework
+    if ($this->uikit == "theme") {
+      $array[] = $this->path() . "uikit/src/less/uikit.theme.less";
+      return $array;
+    }
+
+    // Selected less files
+    $uikit_less_files = $this->uikit_less_files;
+
+    if (count($uikit_less_files) > 0) {
+      foreach ($this->uikit_less_files as $file) {
+        $array[] = $this->path() . "uikit/src/less/components/{$file}";
+      }
+    }
+
+    return $array;
+  }
+
+  /**
+   * UIkit JS Files
+   * Get array of js file urls
+   * If theme there is only 1 all-in-one file.
+   * If custom, get core + only selected files.
+   * @return array
+   */
+  public function uikit_js_files() {
+    $array = [];
+
+    if ($this->uikit == "theme") {
+      $array[] = $this->url() . "uikit/dist/js/uikit.min.js";
+      $array[] = $this->url() . "uikit/dist/js/uikit-icons.min.js";
+      return $array;
+    }
+
+    // load uikit core files
+    $array[] = $this->url() . "uikit/dist/js/uikit.min.js";
+    $array[] = $this->url() . "uikit/dist/js/uikit-icons.min.js";
+
+    // get selected uikit files
+    $uikit_js_files = $this->uikit_js_files;
+
+    if (count($uikit_js_files) > 0) {
+      foreach ($uikit_js_files as $file) {
+        $array[] = $this->url() . "uikit/dist/js/components/{$file}";
+      }
+    }
+
+    return $array;
+  }
+
+  // --------------------------------------------------------- 
+  // Less Compiler 
+  // --------------------------------------------------------- 
 
   /**
    * Main less parser method
@@ -64,6 +178,9 @@ class FrontEndTools extends WireData implements Module {
     $css_file_path = $output_dir . $output_file_name;
     $root_url = "http://" . $this->config->httpHost . $this->config->urls->root;
     $cache_folder = $this->config->paths->assets . "$cache_folder_name/";
+    // if cache folder does not exist, create it
+    if (!is_dir($cache_folder)) $this->files->mkdir($cache_folder);
+    // cache url
     $cache_url = $this->config->urls->assets . "$cache_folder_name/";
 
     $less_array = [];
@@ -81,9 +198,10 @@ class FrontEndTools extends WireData implements Module {
     return $cache_url . $css_file_name;
   }
 
-  /* =========================================================== 
-    Sass Compiler
-  =========================================================== */
+  // --------------------------------------------------------- 
+  // SCSS Compiler 
+  // --------------------------------------------------------- 
+
 
   /**
    *  Trigger scss compile
@@ -151,9 +269,9 @@ class FrontEndTools extends WireData implements Module {
     return false;
   }
 
-  /* =========================================================== 
-    Minify
-  =========================================================== */
+  // --------------------------------------------------------- 
+  // Minify CSS 
+  // --------------------------------------------------------- 
 
   /**
    *  Minify CSS

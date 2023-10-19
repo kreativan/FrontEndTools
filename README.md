@@ -62,3 +62,30 @@ $minified_css = $FrontEndTools->minify($css_string);
 // TODO file_put_contents();
 
 ```
+
+## UIkit
+```php
+<?php
+// Get the module instance
+$FrontEndTools = $modules->get("FrontEndTools");
+?>
+
+<head>
+
+  <?php
+    // Render preload styles tags
+    $FrontEndTools->uikit_preload();
+  ?>
+
+  <?php
+    // Render styles tags
+    $FrontEndTools->uikit_styles();
+  ?>
+  <?php
+    // Render scripts tags
+    $FrontEndTools->uikit_scripts();
+  ?>
+
+</head>
+```
+
