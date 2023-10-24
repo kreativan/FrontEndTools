@@ -170,7 +170,7 @@ class FrontEndTools extends WireData implements Module {
 
     // load less.php if it is not already loaded
     // a simple require_once does not work properly
-    require_once("less.php/lib/Less/Autoloader.php");
+    require_once(__DIR__ . "/less.php/lib/Less/Autoloader.php");
     Less_Autoloader::register();
 
     // create less folder
