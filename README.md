@@ -69,38 +69,8 @@ There is two options you can choose from:
 - **Custom**. Choose which components you want to include, less and javascript.
 - **Theme**. Use default uikit theme, everithing will be included.
 
-
+Options you can use with `uikit_stylesheet()` and `uikit_compile()` methods
 ```php
-<?php
-// Get the module instance
-$FrontEndTools = $modules->get("FrontEndTools");
-?>
-
-<head>
-
-  <?php
-    // Render preload styles tags
-    $FrontEndTools->uikit_preload();
-  ?>
-
-  <?php
-    // Render styles tags
-    $FrontEndTools->uikit_styles();
-  ?>
-	
-  <?php
-    // Render scripts tags
-    $FrontEndTools->uikit_scripts();
-  ?>
-
-</head>
-```
-
-If you only need to compile uikit, and do the rest manually, you can use `uikit_compile()` method:
-```php
-// Get the module instance
-$FrontEndTools = $modules->get("FrontEndTools");
-
 /**
  * Pass additional less files to the compiler
  * specify full file paths in the array
@@ -118,6 +88,39 @@ $variables = [];
  * override default compiler options
  */
 $options = ["output_file" => "main", "cache_folder" => "less-cache"];
+```
+
+Render uikit stylesheet, scripts and preload
+```php
+<?php
+// Get the module instance
+$FrontEndTools = $modules->get("FrontEndTools");
+?>
+
+<head>
+
+  <?php
+    // Render preload styles tags
+    $FrontEndTools->uikit_preload();
+  ?>
+
+  <?php
+    // Render styles tags
+    $FrontEndTools->uikit_stylesheet($files = [], $variables = [], $options = []);
+  ?>
+	
+  <?php
+    // Render scripts tags
+    $FrontEndTools->uikit_scripts();
+  ?>
+
+</head>
+```
+
+If you only need to compile uikit, and do the rest manually, you can use `uikit_compile()` method:
+```php
+// Get the module instance
+$FrontEndTools = $modules->get("FrontEndTools");
 
 // Compile and get file url
 $src = $FrontEndTools->uikit_compile($files = [], $variables = [], $options = []);
