@@ -64,9 +64,9 @@ $minified_css = $FrontEndTools->minify($css_string);
 ```
 
 ## UIkit
-Uikit framework is included in module and you can use module methods to quickly include uikit in your project. 
+Uikit framework is included in the module and you can use provided methods to quickly include uikit in your project. 
 There is two options you can choose from:
-- **Custom**. Choose which components you want to include less and javascript.
+- **Custom**. Choose which components you want to include, less and javascript.
 - **Theme**. Use default uikit theme, everithing will be included.
 
 
@@ -96,7 +96,7 @@ $FrontEndTools = $modules->get("FrontEndTools");
 </head>
 ```
 
-If you only need to compile uikit, and do rest manually, you cna use `uikit_compile()` method:
+If you only need to compile uikit, and do the rest manually, you can use `uikit_compile()` method:
 ```php
 // Get the module instance
 $FrontEndTools = $modules->get("FrontEndTools");
