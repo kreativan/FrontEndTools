@@ -64,6 +64,12 @@ $minified_css = $FrontEndTools->minify($css_string);
 ```
 
 ## UIkit
+Uikit framework is included in module and you can use module methods to quickly include uikit in your project. 
+There is two options you can choose from:
+- **Custom**. Choose which components you want to include less and javascript.
+- **Theme**. Use default uikit theme, everithing will be included.
+
+
 ```php
 <?php
 // Get the module instance
@@ -81,6 +87,7 @@ $FrontEndTools = $modules->get("FrontEndTools");
     // Render styles tags
     $FrontEndTools->uikit_styles();
   ?>
+	
   <?php
     // Render scripts tags
     $FrontEndTools->uikit_scripts();
@@ -88,4 +95,33 @@ $FrontEndTools = $modules->get("FrontEndTools");
 
 </head>
 ```
+
+If you only need to compile uikit, and do rest manually, you cna use `uikit_compile()` method:
+```php
+// Get the module instance
+$FrontEndTools = $modules->get("FrontEndTools");
+
+/**
+ * Pass additional less files to the compiler
+ * specify full file paths in the array
+ */
+$files = [];
+
+/**
+ * Override LEss Variables
+ * @example ['global-primary-background' => "blue"]
+ */
+$variables = [];
+
+/**
+ * Options
+ * override default compiler options
+ */
+$options = ["output_file" => "main", "cache_folder" => "less-cache"];
+
+// Compile and get file url
+$src = $FrontEndTools->uikit_compile($files = [], $variables = [], $options = []);
+```
+
+<img src="screenshot.png" />
 
