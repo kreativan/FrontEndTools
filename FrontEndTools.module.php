@@ -11,7 +11,7 @@ class FrontEndTools extends WireData implements Module {
   public static function getModuleInfo() {
     return array(
       'title' => 'FrontEndTools',
-      'version' => 110,
+      'version' => 111,
       'summary' => 'Tools for building front-ends, preprocessors, minifiers etc...',
       'icon' => 'css3',
       'author' => "Ivan Milincic",
@@ -123,7 +123,7 @@ class FrontEndTools extends WireData implements Module {
     }
 
     // load uikit core files
-    $array[] = $this->url() . "uikit/dist/js/uikit.min.js";
+    $array[] = $this->url() . "uikit/dist/js/uikit-core.min.js";
     $array[] = $this->url() . "uikit/dist/js/uikit-icons.min.js";
 
     // get selected uikit files
@@ -147,7 +147,7 @@ class FrontEndTools extends WireData implements Module {
    * @param array $less_files - array of file paths
    * @param array $variables -  array of less variables ["my_variable" => "100px"]
    * @param string $options['output_file' => 'main'] - output file name
-	 * @param string $options['cache_folder' => 'less-cache'] - cache folder name
+   * @param string $options['cache_folder' => 'less-cache'] - cache folder name
    */
   public function less($less_files, $variables = [], $options = []) {
     $output_file = !empty($options["output_file"]) ? $options["output_file"] : "main";
